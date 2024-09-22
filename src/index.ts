@@ -12,7 +12,7 @@ async function main() {
     setInterval(async () => {
         let data = await sensor.getSensorData();
         client.publish("bme68x", JSON.stringify({...data.data}));
-    }, process.env.SENSOR_INTERVAL ?? 1000);
+    }, Number.parseInt(process.env.SENSOR_INTERVAL) ?? 1000);
 }
 
 main().then();

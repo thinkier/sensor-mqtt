@@ -9,15 +9,10 @@ async function main() {
     await sensor.initialize()
     console.info('Sensor initialized');
 
-    await client.subscribeAsync(["bme68x"]);
-    client.prependListener("message", (ty, msg) => {
-        console.info(JSON.parse(msg.toString()));
-    });
-
     setInterval(async () => {
         let data = await sensor.getSensorData();
         client.publish("bme68x", JSON.stringify({...data.data}));
-    }, 3000);
+    }, process.env.SENSOR_INTERVAL ?? 1000);
 }
 
 main().then();

@@ -6,7 +6,8 @@ async function main() {
     const client = await mqtt.connectAsync(process.env.MQTT_ENDPOINT ?? "mqtt://test.mosquitto.org");
     console.info('MQTT client initialized');
     const sensor = new Bme680(1, 0x76);
-    await sensor.initialize()
+    await sensor.initialize();
+    await sensor.setGasHeaterTemperature(0);
     console.info('Sensor initialized');
 
     setInterval(async () => {

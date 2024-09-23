@@ -11,7 +11,7 @@ async function main() {
 
     setInterval(async () => {
         let data = await sensor.getSensorData();
-        await client.publishAsync("bme68x", JSON.stringify(data.data));
+        await client.publishAsync("v1/devices/me/telemetry", JSON.stringify(data.data));
         console.info("Pushed new data to server:", data.data);
     }, Number.parseInt(process.env.SENSOR_INTERVAL) ?? 1000);
 }

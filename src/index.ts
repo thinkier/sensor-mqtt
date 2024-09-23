@@ -7,12 +7,11 @@ async function main() {
     console.info('MQTT client initialized');
     const sensor = new Bme680(1, 0x76);
     await sensor.initialize();
-    await sensor.setGasHeaterTemperature(0);
     console.info('Sensor initialized');
 
     setInterval(async () => {
         let data = await sensor.getSensorData();
-        client.publish("bme68x", JSON.stringify({...data.data}));
+        client.publish("bme68x", JSON.stringify(data.data));
     }, Number.parseInt(process.env.SENSOR_INTERVAL) ?? 1000);
 }
 

@@ -1,30 +1,28 @@
 import {SCD4x} from 'scd4x-node';
-import mqtt from 'mqtt';
+import {publish} from "./client";
 
-async function main() {
-    const client = await mqtt.connectAsync(process.env.MQTT_ENDPOINT ?? "mqtt://test.mosquitto.org");
-    console.info('MQTT client initialized');
+publish(async function* () {
     const sensor = await SCD4x.connect();
+    await sensor.setTemperatureOffset(Number.parseFloat(process.env.SCD4X_TEMP_OFFSET) ?? 0);
 
     try {
-        await sensor.startPeriodicMeasurement();
-        await new Promise(res => setTimeout(res, 5000))
-        console.info('Sensor initialized');
-    } catch (e) {
-        console.info('Stopping existing sensor session');
         await sensor.stopPeriodicMeasurement();
-        await sensor.disconnect();
-        return;
+        console.info('Sensor soft reboot');
+        await new Promise(res => setTimeout(res, 2000));
+    } catch (e) {
+        // Sensor not initialized to begin with, that's ok.
     }
 
+    await sensor.setAutomaticSelfCalibrationEnabled(true);
+    await sensor.startPeriodicMeasurement();
+    console.info('Sensor initialized');
+
+    await new Promise(res => setTimeout(res, 5000))
     console.info("Sensor ready");
 
-    setInterval(async () => {
+    while (true) {
         if (!(await sensor.isDataReady())) return;
-        let data = await sensor.readMeasurement();
-        await client.publishAsync("v1/devices/me/telemetry", JSON.stringify(data));
-        console.info("Pushed new data to server:", data);
-    }, 5000);
-}
-
-main().then();
+        yield await sensor.readMeasurement();
+        await new Promise(res => setTimeout(res, 5000));
+    }
+}).then();

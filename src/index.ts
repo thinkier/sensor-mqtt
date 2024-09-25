@@ -7,6 +7,7 @@ async function main() {
     console.info('MQTT client initialized');
     const sensor = new Bme680(1, 0x76);
     await sensor.initialize();
+    sensor.setTempOffset(-6);
     await sensor.setGasHeaterTemperature(0);
     console.info('Sensor initialized');
 

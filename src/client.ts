@@ -9,7 +9,7 @@ export async function publish(generator: () => AsyncIterator<any>) {
 
         while (true) {
             let data = await iterator.next();
-            await client.publishAsync("v1/devices/me/telemetry", JSON.stringify(data));
+            await client.publishAsync("v1/devices/me/telemetry", JSON.stringify(data.value));
             console.info("Published:", data);
         }
     } else {

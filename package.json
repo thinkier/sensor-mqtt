@@ -1,9 +1,10 @@
 {
-  "name": "bme68x-mqtt",
+  "name": "sensor-mqtt",
   "version": "0.0.1",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "bme68x": "ts-node src/bme68x.ts",
+    "scd4x": "ts-node src/scd4x.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "bme680-sensor": "^1.1.0",
-    "mqtt": "^5.10.1"
+    "mqtt": "^5.10.1",
+    "scd4x-node": "^1.0.1"
   }
 }

@@ -2,20 +2,18 @@ import mqtt from "mqtt";
 
 export async function publish(generator: () => AsyncIterator<any>) {
     let iterator = generator();
-
+    let client = null;
     if (process.env.MQTT_ENDPOINT) {
-        const client = await mqtt.connectAsync(process.env.MQTT_ENDPOINT);
+        client = await mqtt.connectAsync(process.env.MQTT_ENDPOINT);
         console.info('MQTT client initialized');
-
-        while (true) {
-            let data = await iterator.next();
-            await client.publishAsync("v1/devices/me/telemetry", JSON.stringify(data.value));
-            console.info("Published:", data);
-        }
     } else {
         console.warn("MQTT_ENDPOINT not specified, running in debug mode");
-        while (true) {
-            console.info("Data:", await iterator.next());
-        }
+    }
+
+    let item = await iterator.next();
+    while (!item.done) {
+        await client?.publishAsync("v1/devices/me/telemetry", JSON.stringify(item.value));
+        console.info("Data:", item.value);
+        item = await iterator.next();
     }
 }

@@ -10,8 +10,12 @@ publish(async function* () {
     await sensor.setGasHeaterTemperature(0);
     console.info('Sensor initialized');
 
+    let i = 36;
     while (true) {
-        yield (await sensor.getSensorData()).data;
+        let data = (await sensor.getSensorData()).data;
+        if (i-- <= 0) {
+            yield data;
+        }
         await new Promise(res => setTimeout(res, 5000));
     }
 }).then();

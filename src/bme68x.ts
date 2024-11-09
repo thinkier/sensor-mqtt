@@ -1,7 +1,8 @@
 // @ts-ignore
 import {Bme680} from 'bme680-sensor';
-import mqtt from 'mqtt';
-import {publish} from "./client";
+import {publish} from "./utils/client";
+import {absoluteHumidity} from "./utils/physics/absoluteHumidity";
+import {dewPoint} from "./utils/physics/dewPoint";
 
 publish(async function* () {
     const sensor = new Bme680(1, 0x76);
@@ -14,6 +15,8 @@ publish(async function* () {
     while (true) {
         let data = (await sensor.getSensorData()).data;
         if (i-- <= 0) {
+            data.absolute_humidity = absoluteHumidity(data.temperature, data.humidity);
+            data.dew_point = dewPoint(data.temperature, data.humidity);
             yield data;
         }
         await new Promise(res => setTimeout(res, 5000));

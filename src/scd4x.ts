@@ -1,5 +1,5 @@
 import {SCD4x} from 'scd4x-node';
-import {publish} from "./client";
+import {publish} from "./utils/client";
 
 publish(async function* () {
     const sensor = await SCD4x.connect();
